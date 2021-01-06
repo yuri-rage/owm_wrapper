@@ -75,5 +75,4 @@ class GeoName:
         if search('^[A-Z]{2}$', query):
             self.name, self.alpha_2 = geo_alpha_2_lookup(query)
         else:
-            result = geo_name_lookup(query)
             self.name, self.alpha_2 = geo_name_lookup(query)

@@ -98,4 +98,4 @@ if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(forecast.to_dict())
     """
-    print(pretty_wx_today('allen', 'texas'))
+    print(pretty_wx_today('addison', 'texas'))
