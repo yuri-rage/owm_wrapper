@@ -121,12 +121,4 @@ def pretty_wx_today(city_name, country_name=None, temp_unit='fahrenheit'):
 
 
 if __name__ == '__main__':
-    """
-    mgr = owm.weather_manager()
-    city = get_city('lucas', 'texas')
-    forecast = mgr.one_call(city.lat, city.lon).forecast_daily[0]
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(forecast.to_dict())
-    """
-
     print(pretty_wx_today('dallas', 'texas'))
