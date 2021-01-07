@@ -129,4 +129,4 @@ if __name__ == '__main__':
     pp.pprint(forecast.to_dict())
     """
 
-    print(pretty_wx_today('lucas', 'texas'))
+    print(pretty_wx_today('dallas', 'texas'))
