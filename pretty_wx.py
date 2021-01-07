@@ -33,6 +33,33 @@ def heading_to_cardinal(heading):
     return cardinals[index % len(cardinals)]
 
 
+def pretty_temp_diff(temp1, temp2):
+    diff = temp2 - temp1
+    if abs(diff) < 3:
+        return 'similar'
+    if 2 < diff < 7:
+        return 'warmer'
+    if diff > 0:
+        return 'much warmer'
+    if diff > -7:
+        return 'cooler'
+    return 'much cooler'
+
+
+def pretty_wind(wind_speed):  # grammatically, return values should follow the words, "with" or "and"
+    if wind_speed < 4:
+        return 'calm wind'
+    if wind_speed < 8:
+        return 'a light breeze'
+    if wind_speed < 16:
+        return 'light wind'
+    if wind_speed < 26:
+        return 'moderate wind'
+    if wind_speed < 41:
+        return 'high winds'
+    return 'very high winds'
+
+
 def get_city(city, country=''):
     """
     Note: the GeoName class is US-state preferential, since that's where I live
@@ -74,20 +101,23 @@ def pretty_wx_today(city_name, country_name=None, temp_unit='fahrenheit'):
     city = get_city(city_name, country_name)
 
     mgr = owm.weather_manager()
-    observation = mgr.weather_at_id(city.id)
-    wx = observation.weather
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(wx.to_dict())
-    if 'gust' in wx.wind():
-        gust = f' gusting to {int(wx.wind()["gust"])} knots'
+    obs = mgr.weather_at_id(city.id).weather
+    fcst = mgr.one_call(city.lat, city.lon).forecast_daily[0]
+    obs_high = round(obs.temperature(temp_unit)["temp_max"])
+    fcst_high = round(fcst.temperature(temp_unit).get('max'))
+    if 'gust' in obs.wind():
+        gust = f' gusting to {int(obs.wind()["gust"])} knots'
     else:
         gust = ''
-    return f'{wx.detailed_status.capitalize()} over {city.name}, {city.country}. ' \
-           f'{int(wx.temperature(temp_unit)["temp"])} degrees. ' \
-           f'Feels like {str(int(wx.temperature(temp_unit)["feels_like"]))} degrees. ' \
-           f'{heading_to_cardinal(wx.wind()["deg"])} wind at {int(wx.wind()["speed"])} knots{gust}. ' \
-           f'The high today is {int(wx.temperature(temp_unit)["temp_max"])} degrees' \
-           f', low of {int(wx.temperature(temp_unit)["temp_min"])} degrees.'
+    return f'{obs.detailed_status.capitalize()} over {city.name}, {city.country}. ' \
+           f'{round(obs.temperature(temp_unit)["temp"])} degrees ' \
+           f'with a high of {obs_high} and a low of {round(obs.temperature(temp_unit)["temp_min"])} degrees.\n' \
+           f'Currently feels like {round(obs.temperature(temp_unit)["feels_like"])} degrees. ' \
+           f'{obs.humidity} percent humidity. ' \
+           f'{heading_to_cardinal(obs.wind()["deg"])} wind at {round(obs.wind()["speed"])} knots{gust}.\n' \
+           f'{fcst.detailed_status.capitalize()} tomorrow with ' \
+           f'{pretty_temp_diff(obs_high, fcst_high)} temperatures ' \
+           f'and {pretty_wind(fcst.wind()["speed"])}.'
 
 
 if __name__ == '__main__':
@@ -98,4 +128,5 @@ if __name__ == '__main__':
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(forecast.to_dict())
     """
-    print(pretty_wx_today('addison', 'texas'))
+
+    print(pretty_wx_today('lucas', 'texas'))
